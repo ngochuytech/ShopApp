@@ -50,19 +50,7 @@ public class ProductsService implements IProductService{
     @Override
     public Page<ProductResponse> getAllProducts(Pageable papeRequest) {
         // Lấy danh sách sản phẩm theo trang (page) và giới hạn (limit)
-        return productRepository.findAll(papeRequest).map(product -> {
-            ProductResponse productResponse = ProductResponse.builder()
-                .name(product.getName())
-                .price(product.getPrice())
-                .thumbnail(product.getThumbnail())
-                .description(product.getDescription())
-                .categoryId(product.getCategory().getId())
-                .build();
-                productResponse.setCreatedAt(product.getCreatedAt());
-                productResponse.setUpdatedAt(product.getUpdatedAt());
-                return productResponse;
-            }
-        );
+        return productRepository.findAll(papeRequest).map(ProductResponse :: fromProduct);
     }
 
     @Override

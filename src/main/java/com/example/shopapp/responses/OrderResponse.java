@@ -1,13 +1,11 @@
-package com.example.shopapp.dtos;
+package com.example.shopapp.responses;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,8 +14,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDTO {
-    @Min(value = 1, message = "User's ID muset be > 0")
+@Builder
+public class OrderResponse extends BaseResponse{
+    private Long id;
+
     @JsonProperty("user_id")
     private Long userId;
 
@@ -27,20 +27,19 @@ public class OrderDTO {
     private String email;
 
     @JsonProperty("phone_number")
-    @Size(min = 5, message = "Phone number must be at least 5 characters")
-    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
 
     private String address;
 
     private String note;
 
-    @JsonProperty("total_money")
-    @Min(value = 0, message = "Total money must be >= 0")
-    private Float totalMoney;
+    @JsonProperty("order_date")
+    private LocalDateTime orderDate;
 
-    @JsonProperty("shipping_date")
-    private LocalDate shippingDate;
+    private String status;
+    
+    @JsonProperty("total_money")
+    private Float totalMoney;
 
     @JsonProperty("shipping_method")
     private String shippingMethod;

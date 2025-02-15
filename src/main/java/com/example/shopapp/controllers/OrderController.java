@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.shopapp.dtos.OrderDTO;
+import com.example.shopapp.models.Order;
+import com.example.shopapp.services.IOrderService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("${api.prefix}/orders")
+@RequiredArgsConstructor
 public class OrderController {
-    
+    private final IOrderService orderService;
+
     @PostMapping("")
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTO OrderDTO, 
         BindingResult result
@@ -34,16 +39,28 @@ public class OrderController {
                 .toList();
                 return ResponseEntity.badRequest().body(errorMesseages);
             }
-            return ResponseEntity.ok("CreteOrder successfully");
+            Order order = orderService.createOrder(OrderDTO);
+            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping("/{user_id}")
+    @GetMapping("/user/{user_id}")
     public ResponseEntity<?> getOrders(@Valid @PathVariable("user_id") Long userId){
         try {
-            return ResponseEntity.ok("Lay ra danh sach order to user ID" + userId);
+            List<Order> orders = orderService.findByUserId(userId);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrder(@Valid @PathVariable("id") Long orderId){
+        try {
+            Order existingOrder = orderService.getOrder(orderId);
+            return ResponseEntity.ok(existingOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -54,7 +71,8 @@ public class OrderController {
     @Valid @RequestBody OrderDTO orderDTO
     ){
         try {
-            return ResponseEntity.ok("Cap nhat thong tin 1 order");
+            Order order = orderService.updateOrder(Id, orderDTO);
+            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -63,7 +81,7 @@ public class OrderController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrders(@Valid @PathVariable("id") Long id){
         try {
-            // Xoa mem => Cap nhat truong active = false
+            orderService.deleteOrder(id);
             return ResponseEntity.ok("Order deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
